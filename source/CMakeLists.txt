@@ -8,6 +8,5 @@ set(src
 )
 
 
-#add_executable(foro ${src})
 add_executable(source ${src} src/source.cpp)
 target_include_directories(source PRIVATE include)
