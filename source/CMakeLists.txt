@@ -4,11 +4,14 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(src_include
     include/lexer.hpp
+    include/parser.hpp
+    include/arbol.hpp
 )
 
 set(src
     src/source.cpp
     src/lexer.cpp
+    src/parser.cpp
     ${src_include}
 )
 
