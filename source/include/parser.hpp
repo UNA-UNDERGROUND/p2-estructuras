@@ -10,7 +10,7 @@ namespace analizador{
 			literal,		//"string"
 			numero			//1234
 		};
-		Estado estado;
+		Estado estado = Estado::ninguno;
 		std::string buffer;
 		size_t posLinea = 0;
 		size_t posColumna = 0;

@@ -5,12 +5,13 @@
 #include <fstream>
 
 using analizador::lexer::Token;
+using analizador::lexer::TokenPos;
+using analizador::lexer::TipoToken;
 using analizador::Parser;
 
 
 bool test1() {
-    Arbol<Token> arbol;
-    arbol.raiz->valor = std::make_unique<Token>(Token());
+    Arbol<Token> arbol(new Token(TokenPos(),TipoToken::indefinido,"~"));
     return arbol.raiz->valor->tipoToken == analizador::lexer::TipoToken::indefinido;
 }
 
@@ -18,6 +19,6 @@ bool test1() {
 int main(){
     Parser parser;
     std::ifstream archivo("codigo");
-    noskipws(archivo);
+    
     parser.genVector(archivo);
 }

@@ -10,7 +10,9 @@ template <typename T> struct Arbol {
 	  public:
 		Nodo() = default;
 		Nodo(T *valor) : valor(valor) {}
+		Nodo(T&& valor) : valor(new T(valor)) {}
 	};
 	std::unique_ptr<Nodo> raiz = std::make_unique<Nodo>(Nodo());
 	Arbol() = default;
+	Arbol(T* raiz) : raiz(std::make_unique<Nodo>(raiz)) {}
 };

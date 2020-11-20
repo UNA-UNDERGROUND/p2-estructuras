@@ -4,6 +4,7 @@
 
 namespace analizador {
 std::vector<lexer::Token> Parser::genVector(std::istream &is) {
+	noskipws(is);
 	std::vector<lexer::Token> tokens;
 
 	for (char c : istream_it<char>(is)) {
@@ -13,23 +14,19 @@ std::vector<lexer::Token> Parser::genVector(std::istream &is) {
 			continue;
 		}
 		posLinea++;
-		std::cout << c;
+		buffer = c;
 
 		switch (estado) {
 		case Estado::ninguno: {
 			if (isalpha(c)) {
 				estado = Estado::literal;
+				leerPalabra(is);
 			} else if (isdigit(c)) {
 				estado = Estado::numero;
 			} else if (c == '"') {
 				estado = Estado::literal;
 			}
-		}
-		break;
-		case Estado::identificador: {
-			
-		}
-		break;
+		} break;
 		default:
 			break;
 		}
@@ -39,8 +36,40 @@ std::vector<lexer::Token> Parser::genVector(std::istream &is) {
 }
 
 // lee una palabra
-std::string Parser::leerPalabra(std::istream &is) { return ""; }
+void Parser::leerPalabra(std::istream &is) {
+	for (char c : istream_it<char>(is)) {
+		posLinea++;
+		if (isalnum(c)) {
+			buffer += c;
+		} else if (isspace(c)) {
+			break;
+		}
+		// simbolo inesperado
+		else {
+			buffer += c;
+			break;
+		}
+	}
+	estado = Estado::ninguno;
+	std::cout << "identificador: " << buffer << "\n";
+}
 // lee una cadena literal ejemplo = "hola mundo"
 // cuenta las comillas pero no las incluye
-std::string Parser::leerLiteral(std::istream &s) { return ""; }
+void Parser::leerLiteral(std::istream &s) {
+	for (char c : istream_it<char>(is)) {
+		posLinea++;
+		if (isalnum(c)) {
+			buffer += c;
+		} else if (isspace(c)) {
+			break;
+		}
+		// simbolo inesperado
+		else {
+			buffer += c;
+			break;
+		}
+	}
+	estado = Estado::ninguno;
+	std::cout << "identificador: " << buffer << "\n";
+}
 } // namespace analizador
