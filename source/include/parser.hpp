@@ -16,7 +16,9 @@ namespace analizador{
 		size_t posColumna = 0;
 
 		void leerPalabra(std::istream& is);
-		void leerLiteral(std::istream& s);
+		void leerLiteral(std::istream& is);
+		void leerNumero(std::istream& is);
+		
 		public:
 		std::vector<lexer::Token> genVector(std::istream& is);
 		

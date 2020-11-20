@@ -23,6 +23,7 @@ std::vector<lexer::Token> Parser::genVector(std::istream &is) {
 				leerPalabra(is);
 			} else if (isdigit(c)) {
 				estado = Estado::numero;
+				leerNumero(is);
 			} else if (c == '"') {
 				estado = Estado::literal;
 			}
@@ -71,5 +72,22 @@ void Parser::leerLiteral(std::istream &is) {
 	}
 	estado = Estado::ninguno;
 	std::cout << "identificador: " << buffer << "\n";
+}
+void Parser::leerNumero(std::istream& is) {
+	for (char c : istream_it<char>(is)) {
+		posLinea++;
+		if (isalnum(c) || c == '.') {
+			buffer += c;
+		} else if (isspace(c)) {
+			break;
+		}
+		// simbolo inesperado
+		char sig = is.peek();
+		if(sig == EOF || (!isdigit(c) && c != '.')){
+			break;
+		}
+	}
+	estado = Estado::ninguno;
+	std::cout << "numero: " << buffer << "\n";
 }
 } // namespace analizador
