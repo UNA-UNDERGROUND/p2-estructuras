@@ -48,8 +48,10 @@ enum class TipoToken {
 };
 enum class CatToken {
 	identificador, // abc
+	tipo,		   // void int float string
 	asignacion,    // =
 	comparacion,   // >= <= !=
+	aritmetico,	   // + - * /
 	numerico,      // 123.45
 	literal,       // "hola mundo"
 	llave,         // {} [] ()
@@ -72,15 +74,15 @@ class TokenPos {
 class Token {
   public:
 	const TokenPos pos;
-	const TipoToken tipo = TipoToken::indefinido;
 	const CatToken categoria = CatToken::indefinido;
+	const TipoToken tipo = TipoToken::indefinido;
 
 	const std::string contenido;
 	explicit Token(){};
-	Token(const TokenPos &pos, const TipoToken tipo = TipoToken::indefinido,
-	      const CatToken categoria = CatToken::indefinido,
-	      const std::string &contenido = "")
-	    : pos(pos), tipo(tipo), categoria(categoria), contenido(contenido){};
+	Token(const TokenPos &pos, const CatToken categoria = CatToken::indefinido,
+	      const TipoToken tipo = TipoToken::indefinido,
+	      const std::string contenido = "")
+	    : pos(pos), categoria(categoria), tipo(tipo), contenido(contenido){};
 };
 } // namespace lexer
 } // namespace analizador
