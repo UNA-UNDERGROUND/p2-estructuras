@@ -19,6 +19,10 @@ bool test1() {
 int main(){
     Parser parser;
     std::ifstream archivo("codigo");
-    
+	if (archivo) {
     parser.genVector(archivo);
+	} else {
+		std::cout << "Error: "
+		          << "no se encontro el archivo\n";
+	}
 }
