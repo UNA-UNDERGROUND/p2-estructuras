@@ -2,14 +2,22 @@
 #include <lexer.hpp>
 #include <parser.hpp>
 #include <arbol.hpp>
+#include <fstream>
 
 using analizador::lexer::Token;
-using std::cout;
+using analizador::Parser;
 
 
-int main() {
+bool test1() {
     Arbol<Token> arbol;
     arbol.raiz->valor = std::make_unique<Token>(Token());
-    bool res = arbol.raiz->valor->tipoToken == analizador::lexer::TipoToken::indefinido;
-    cout << (res ? "verdadero": "falso") << "\n";
+    return arbol.raiz->valor->tipoToken == analizador::lexer::TipoToken::indefinido;
+}
+
+
+int main(){
+    Parser parser;
+    std::ifstream archivo("codigo");
+    noskipws(archivo);
+    parser.genVector(archivo);
 }
