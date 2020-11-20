@@ -6,6 +6,7 @@ set(src_include
     include/lexer.hpp
     include/parser.hpp
     include/arbol.hpp
+    include/util.hpp
 )
 
 set(src
