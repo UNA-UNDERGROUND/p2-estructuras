@@ -55,7 +55,7 @@ void Parser::leerPalabra(std::istream &is) {
 }
 // lee una cadena literal ejemplo = "hola mundo"
 // cuenta las comillas pero no las incluye
-void Parser::leerLiteral(std::istream &s) {
+void Parser::leerLiteral(std::istream &is) {
 	for (char c : istream_it<char>(is)) {
 		posLinea++;
 		if (isalnum(c)) {
