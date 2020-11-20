@@ -1,8 +1,19 @@
 #include <iostream>
 #include <parser.hpp>
+#include <tokens.hpp>
 #include <util.hpp>
+#include <tokens.hpp>
 
 namespace analizador {
+
+Parser::Parser() {
+	static bool Inicializado = false;
+	if (!Inicializado) {
+		Inicializado = true;
+		inicializar();
+	}
+}
+
 std::vector<lexer::Token> Parser::genVector(std::istream &is) {
 	noskipws(is);
 	std::vector<lexer::Token> tokens;

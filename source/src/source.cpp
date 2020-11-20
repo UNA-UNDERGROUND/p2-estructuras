@@ -11,8 +11,8 @@ using analizador::Parser;
 
 
 bool test1() {
-    Arbol<Token> arbol(new Token(TokenPos(),TipoToken::indefinido,"~"));
-    return arbol.raiz->valor->tipoToken == analizador::lexer::TipoToken::indefinido;
+    Arbol<Token> arbol(new Token(TokenPos()));
+    return arbol.raiz->valor->tipo == analizador::lexer::TipoToken::indefinido;
 }
 
 

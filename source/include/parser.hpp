@@ -22,6 +22,7 @@ namespace analizador{
 	    void leerSimbolo(std::istream &is);
 		
 		public:
+		Parser();
 		std::vector<lexer::Token> genVector(std::istream& is);
 		
 	};

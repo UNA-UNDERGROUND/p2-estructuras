@@ -7,12 +7,14 @@ set(src_include
     include/parser.hpp
     include/arbol.hpp
     include/util.hpp
+    include/tokens.hpp
 )
 
 set(src
     src/source.cpp
     src/lexer.cpp
     src/parser.cpp
+    src/tokens.cpp
     ${src_include}
 )
 
