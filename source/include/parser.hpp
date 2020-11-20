@@ -8,7 +8,8 @@ namespace analizador{
 			ninguno,		//estado general
 			identificador,	//nombres
 			literal,		//"string"
-			numero			//1234
+			numero,			//1234
+			simbolo,		// ; ! > = [
 		};
 		Estado estado = Estado::ninguno;
 		std::string buffer;
@@ -18,6 +19,7 @@ namespace analizador{
 		void leerPalabra(std::istream& is);
 		void leerLiteral(std::istream& is);
 		void leerNumero(std::istream& is);
+	    void leerSimbolo(std::istream &is);
 		
 		public:
 		std::vector<lexer::Token> genVector(std::istream& is);

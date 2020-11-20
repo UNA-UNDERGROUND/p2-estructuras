@@ -9,11 +9,11 @@ std::vector<lexer::Token> Parser::genVector(std::istream &is) {
 
 	for (char c : istream_it<char>(is)) {
 		if (c == '\n') {
-			posLinea = 0;
-			posColumna++;
+			posColumna = 0;
+			posLinea++;
 			continue;
 		}
-		posLinea++;
+		posColumna++;
 		buffer = c;
 
 		switch (estado) {
@@ -26,6 +26,10 @@ std::vector<lexer::Token> Parser::genVector(std::istream &is) {
 				leerNumero(is);
 			} else if (c == '"') {
 				estado = Estado::literal;
+				leerLiteral(is);
+			} else if (!isspace(c)) {
+				estado = Estado::simbolo;
+				leerSimbolo(is);
 			}
 		} break;
 		default:
@@ -39,15 +43,20 @@ std::vector<lexer::Token> Parser::genVector(std::istream &is) {
 // lee una palabra
 void Parser::leerPalabra(std::istream &is) {
 	for (char c : istream_it<char>(is)) {
-		posLinea++;
+		posColumna++;
+
 		if (isalnum(c)) {
 			buffer += c;
 		} else if (isspace(c)) {
+			if (c == '\n') {
+				posColumna = 0;
+				posLinea++;
+			}
 			break;
 		}
 		// simbolo inesperado
-		else {
-			buffer += c;
+		char sig = is.peek();
+		if (sig == EOF || (!isalnum(c))) {
 			break;
 		}
 	}
@@ -58,36 +67,43 @@ void Parser::leerPalabra(std::istream &is) {
 // cuenta las comillas pero no las incluye
 void Parser::leerLiteral(std::istream &is) {
 	for (char c : istream_it<char>(is)) {
-		posLinea++;
-		if (isalnum(c)) {
-			buffer += c;
-		} else if (isspace(c)) {
+		posColumna++;
+		if (c == '\n') {
+			posColumna = 0;
+			posLinea++;
 			break;
 		}
-		// simbolo inesperado
-		else {
-			buffer += c;
+		buffer += c;
+		if (c == '"') {
 			break;
 		}
 	}
 	estado = Estado::ninguno;
 	std::cout << "identificador: " << buffer << "\n";
 }
-void Parser::leerNumero(std::istream& is) {
+void Parser::leerNumero(std::istream &is) {
 	for (char c : istream_it<char>(is)) {
-		posLinea++;
+		posColumna++;
 		if (isalnum(c) || c == '.') {
 			buffer += c;
 		} else if (isspace(c)) {
+			if (c == '\n') {
+				posColumna = 0;
+				posLinea++;
+			}
 			break;
 		}
 		// simbolo inesperado
 		char sig = is.peek();
-		if(sig == EOF || (!isdigit(c) && c != '.')){
+		if (sig == EOF || (!isdigit(c) && c != '.')) {
 			break;
 		}
 	}
 	estado = Estado::ninguno;
 	std::cout << "numero: " << buffer << "\n";
+}
+void Parser::leerSimbolo(std::istream &is) {
+	estado = Estado::ninguno;
+	std::cout << "simbolo: " << buffer << "\n";
 }
 } // namespace analizador
