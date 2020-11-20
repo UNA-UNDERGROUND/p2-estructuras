@@ -2,7 +2,6 @@
 #include <parser.hpp>
 #include <tokens.hpp>
 #include <util.hpp>
-#include <tokens.hpp>
 
 namespace analizador {
 
@@ -114,6 +113,28 @@ void Parser::leerNumero(std::istream &is) {
 	std::cout << "numero: " << buffer << "\n";
 }
 void Parser::leerSimbolo(std::istream &is) {
+	//revisar si viene un proximo =
+	if (buffer == "<" || buffer == ">" || buffer == "!" || buffer == "=") {
+		//solo revisaremos si es un espacio o directamente es el =
+		if(isspace(is.peek()) || is.peek() == '='){
+			for (char c : istream_it<char>(is)) {
+			posColumna++;
+			if (isspace(c)) {
+				if (c == '\n') {
+					posColumna = 0;
+					posLinea++;
+				}
+				break;
+			}
+			if(c == '='){
+				buffer += c;
+				break;
+			}
+			
+		}
+		}
+	}
+
 	estado = Estado::ninguno;
 	std::cout << "simbolo: " << buffer << "\n";
 }
