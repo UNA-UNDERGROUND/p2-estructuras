@@ -69,6 +69,6 @@ std::ostream &operator<<(std::ostream &os,
 }
 std::ostream &operator<<(std::ostream &os,
                          const analizador::lexer::CatToken ct) {
-	os << std::setw(20) << std::left << strTipoToken[(const size_t)ct];
+	os << std::setw(20) << std::left << strCatToken[(const size_t)ct];
 	return os;
 }
