@@ -1,12 +1,19 @@
 #pragma once
 #include <string>
-#include <string_view>
-#include <tuple>
 #include <vector>
+#include <arbol.hpp>
 
 
 namespace analizador {
 namespace lexer {
+
+	enum class Estado{
+			ninguno,		//estado general
+			identificador,	//nombres
+			literal,		//"string"
+			numero,			//1234
+			simbolo,		// ; ! > = [
+	};
 
 enum class TipoToken {
 	numero,              // 12
@@ -91,6 +98,9 @@ class Token {
 
 	std::string toString() const;
 };
+
+std::vector<std::string> generarArbol(std::vector<Token> tokens, Arbol<Token>& arbol);
+
 } // namespace lexer
 } // namespace analizador
 

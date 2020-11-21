@@ -21,24 +21,16 @@ std::vector<lexer::Token> Parser::genVector(std::istream &is) {
 		posColumna++;
 		buffer = c;
 
-		switch (estado) {
-		case Estado::ninguno: {
-			if (isalpha(c)) {
-				estado = Estado::literal;
-				tokens.push_back(leerPalabra(is));
-			} else if (isdigit(c)) {
-				estado = Estado::numero;
-				tokens.push_back(leerNumero(is));
-			} else if (c == '"') {
-				estado = Estado::literal;
-				tokens.push_back(leerLiteral(is));
-			} else if (!isspace(c)) {
-				estado = Estado::simbolo;
-				tokens.push_back(leerSimbolo(is));
-			}
-		} break;
-		default:
-			break;
+		if (isalpha(c)) {
+
+			tokens.push_back(leerPalabra(is));
+		} else if (isdigit(c)) {
+
+			tokens.push_back(leerNumero(is));
+		} else if (c == '"') {
+			tokens.push_back(leerLiteral(is));
+		} else if (!isspace(c)) {
+			tokens.push_back(leerSimbolo(is));
 		}
 	}
 
@@ -62,13 +54,12 @@ lexer::Token Parser::leerPalabra(std::istream &is) {
 			}
 			// simbolo inesperado
 			char sig = is.peek();
-			if (sig == EOF || (!isalnum(c))) {
+			if (sig == EOF || (!isalnum(sig))) {
 				break;
 			}
 		}
 	}
 
-	estado = Estado::ninguno;
 
 	if (mapaToken.find(buffer) != mapaToken.end()) {
 		lexer::Token t = mapaToken.at(buffer);
@@ -96,7 +87,6 @@ lexer::Token Parser::leerLiteral(std::istream &is) {
 			break;
 		}
 	}
-	estado = Estado::ninguno;
 	return lexer::Token(lexer::TokenPos(posLinea, posColumna),
 	                    lexer::CatToken::literal, lexer::TipoToken::string,
 	                    buffer);
@@ -127,7 +117,6 @@ lexer::Token Parser::leerNumero(std::istream &is) {
 			}
 		}
 	}
-	estado = Estado::ninguno;
 	return lexer::Token(lexer::TokenPos(posLinea, posColumna),
 	                    lexer::CatToken::numerico, lexer::TipoToken::numero,
 	                    buffer);
@@ -153,8 +142,6 @@ lexer::Token Parser::leerSimbolo(std::istream &is) {
 			}
 		}
 	}
-
-	estado = Estado::ninguno;
 	if (mapaToken.find(buffer) != mapaToken.end()) {
 		lexer::Token t = mapaToken.at(buffer);
 		t.pos.caracter = posColumna;
