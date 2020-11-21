@@ -3,6 +3,13 @@
 namespace analizador {
 std::unordered_map<std::string, lexer::Token> mapaToken;
 void inicializar() {
+	static bool inicializado = false;
+	if(inicializado){
+		return;
+	}
+	inicializado = true;
+
+
 	using lexer::CatToken;
 	using lexer::TipoToken;
 	using lexer::Token;

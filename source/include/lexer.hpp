@@ -4,6 +4,7 @@
 #include <tuple>
 #include <vector>
 
+
 namespace analizador {
 namespace lexer {
 
@@ -48,10 +49,10 @@ enum class TipoToken {
 };
 enum class CatToken {
 	identificador, // abc
-	tipo,		   // void int float string
+	tipo,          // void int float string
 	asignacion,    // =
 	comparacion,   // >= <= !=
-	aritmetico,	   // + - * /
+	aritmetico,    // + - * /
 	numerico,      // 123.45
 	literal,       // "hola mundo"
 	llave,         // {} [] ()
@@ -59,21 +60,25 @@ enum class CatToken {
 	indefinido     // indefinido
 };
 
-class TokenPos {
-	const size_t linea = -1;
-	const size_t caracter = -1;
-
-  public:
-	explicit TokenPos() = default;
+struct TokenPos {
+	size_t linea = -1;
+	size_t caracter = -1;
+	TokenPos() = default;
 	TokenPos(size_t linea, size_t caracter)
 	    : linea(linea), caracter(caracter){};
-	const size_t getlinea() { return linea; }
-	const size_t getCaracter() { return caracter; }
+	TokenPos(const TokenPos &otro)
+	    : linea(otro.linea), caracter(otro.caracter){};
+
+	TokenPos &operator=(const TokenPos &otro) {
+		linea = otro.linea;
+		caracter = otro.caracter;
+		return *this;
+	};
 };
 
 class Token {
   public:
-	const TokenPos pos;
+	TokenPos pos;
 	const CatToken categoria = CatToken::indefinido;
 	const TipoToken tipo = TipoToken::indefinido;
 
@@ -83,6 +88,13 @@ class Token {
 	      const TipoToken tipo = TipoToken::indefinido,
 	      const std::string contenido = "")
 	    : pos(pos), categoria(categoria), tipo(tipo), contenido(contenido){};
+
+	std::string toString() const;
 };
 } // namespace lexer
 } // namespace analizador
+
+std::ostream &operator<<(std::ostream &os,
+                         const analizador::lexer::TipoToken tp);
+std::ostream &operator<<(std::ostream &os,
+                         const analizador::lexer::CatToken tp);

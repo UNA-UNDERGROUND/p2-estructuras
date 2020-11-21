@@ -1,3 +1,4 @@
+#include "lexer.hpp"
 #include <iostream>
 #include <parser.hpp>
 #include <tokens.hpp>
@@ -5,13 +6,7 @@
 
 namespace analizador {
 
-Parser::Parser() {
-	static bool Inicializado = false;
-	if (!Inicializado) {
-		Inicializado = true;
-		inicializar();
-	}
-}
+Parser::Parser() { inicializar(); }
 
 std::vector<lexer::Token> Parser::genVector(std::istream &is) {
 	noskipws(is);
@@ -30,16 +25,16 @@ std::vector<lexer::Token> Parser::genVector(std::istream &is) {
 		case Estado::ninguno: {
 			if (isalpha(c)) {
 				estado = Estado::literal;
-				leerPalabra(is);
+				tokens.push_back(leerPalabra(is));
 			} else if (isdigit(c)) {
 				estado = Estado::numero;
-				leerNumero(is);
+				tokens.push_back(leerNumero(is));
 			} else if (c == '"') {
 				estado = Estado::literal;
-				leerLiteral(is);
+				tokens.push_back(leerLiteral(is));
 			} else if (!isspace(c)) {
 				estado = Estado::simbolo;
-				leerSimbolo(is);
+				tokens.push_back(leerSimbolo(is));
 			}
 		} break;
 		default:
@@ -51,31 +46,44 @@ std::vector<lexer::Token> Parser::genVector(std::istream &is) {
 }
 
 // lee una palabra
-void Parser::leerPalabra(std::istream &is) {
-	for (char c : istream_it<char>(is)) {
-		posColumna++;
+lexer::Token Parser::leerPalabra(std::istream &is) {
+	if (isalnum(is.peek())) {
+		for (char c : istream_it<char>(is)) {
+			posColumna++;
 
-		if (isalnum(c)) {
-			buffer += c;
-		} else if (isspace(c)) {
-			if (c == '\n') {
-				posColumna = 0;
-				posLinea++;
+			if (isalnum(c)) {
+				buffer += c;
+			} else if (isspace(c)) {
+				if (c == '\n') {
+					posColumna = 0;
+					posLinea++;
+				}
+				break;
 			}
-			break;
-		}
-		// simbolo inesperado
-		char sig = is.peek();
-		if (sig == EOF || (!isalnum(c))) {
-			break;
+			// simbolo inesperado
+			char sig = is.peek();
+			if (sig == EOF || (!isalnum(c))) {
+				break;
+			}
 		}
 	}
+
 	estado = Estado::ninguno;
-	std::cout << "identificador: " << buffer << "\n";
+
+	if (mapaToken.find(buffer) != mapaToken.end()) {
+		lexer::Token t = mapaToken.at(buffer);
+		t.pos.caracter = posColumna;
+		t.pos.linea = posLinea;
+		return t;
+	} else {
+		return lexer::Token(lexer::TokenPos(posLinea, posColumna),
+		                    lexer::CatToken::identificador,
+		                    lexer::TipoToken::identificador, buffer);
+	}
 }
 // lee una cadena literal ejemplo = "hola mundo"
 // cuenta las comillas pero no las incluye
-void Parser::leerLiteral(std::istream &is) {
+lexer::Token Parser::leerLiteral(std::istream &is) {
 	for (char c : istream_it<char>(is)) {
 		posColumna++;
 		if (c == '\n') {
@@ -89,53 +97,73 @@ void Parser::leerLiteral(std::istream &is) {
 		}
 	}
 	estado = Estado::ninguno;
-	std::cout << "identificador: " << buffer << "\n";
+	return lexer::Token(lexer::TokenPos(posLinea, posColumna),
+	                    lexer::CatToken::literal, lexer::TipoToken::string,
+	                    buffer);
 }
-void Parser::leerNumero(std::istream &is) {
-	for (char c : istream_it<char>(is)) {
-		posColumna++;
-		if (isalnum(c) || c == '.') {
-			buffer += c;
-		} else if (isspace(c)) {
-			if (c == '\n') {
-				posColumna = 0;
-				posLinea++;
-			}
-			break;
+lexer::Token Parser::leerNumero(std::istream &is) {
+	char sig = is.peek();
+	if (isdigit(sig) || sig == '.') {
+		bool esFloat = sig == '.';
+		if (esFloat) {
+			buffer += ".";
 		}
-		// simbolo inesperado
-		char sig = is.peek();
-		if (sig == EOF || (!isdigit(c) && c != '.')) {
-			break;
-		}
-	}
-	estado = Estado::ninguno;
-	std::cout << "numero: " << buffer << "\n";
-}
-void Parser::leerSimbolo(std::istream &is) {
-	//revisar si viene un proximo =
-	if (buffer == "<" || buffer == ">" || buffer == "!" || buffer == "=") {
-		//solo revisaremos si es un espacio o directamente es el =
-		if(isspace(is.peek()) || is.peek() == '='){
-			for (char c : istream_it<char>(is)) {
+		for (char c : istream_it<char>(is)) {
 			posColumna++;
-			if (isspace(c)) {
+			if (isalnum(c) || (c == '.' && !esFloat)) {
+				esFloat = true;
+				buffer += c;
+			} else if (isspace(c)) {
 				if (c == '\n') {
 					posColumna = 0;
 					posLinea++;
 				}
 				break;
 			}
-			if(c == '='){
-				buffer += c;
+			// simbolo inesperado
+			sig = is.peek();
+			if (sig == EOF || (!isdigit(sig) && !(sig == '.' && esFloat))) {
 				break;
 			}
-			
 		}
+	}
+	estado = Estado::ninguno;
+	return lexer::Token(lexer::TokenPos(posLinea, posColumna),
+	                    lexer::CatToken::numerico, lexer::TipoToken::numero,
+	                    buffer);
+}
+lexer::Token Parser::leerSimbolo(std::istream &is) {
+	// revisar si viene un proximo =
+	if (buffer == "<" || buffer == ">" || buffer == "!" || buffer == "=") {
+		// solo revisaremos si es un espacio o directamente es el =
+		if (isspace(is.peek()) || is.peek() == '=') {
+			for (char c : istream_it<char>(is)) {
+				posColumna++;
+				if (isspace(c)) {
+					if (c == '\n') {
+						posColumna = 0;
+						posLinea++;
+					}
+					break;
+				}
+				if (c == '=') {
+					buffer += c;
+					break;
+				}
+			}
 		}
 	}
 
 	estado = Estado::ninguno;
-	std::cout << "simbolo: " << buffer << "\n";
+	if (mapaToken.find(buffer) != mapaToken.end()) {
+		lexer::Token t = mapaToken.at(buffer);
+		t.pos.caracter = posColumna;
+		t.pos.linea = posLinea;
+		return t;
+	} else {
+		return lexer::Token(lexer::TokenPos(posLinea, posColumna),
+		                    lexer::CatToken::otro, lexer::TipoToken::indefinido,
+		                    buffer);
+	}
 }
 } // namespace analizador

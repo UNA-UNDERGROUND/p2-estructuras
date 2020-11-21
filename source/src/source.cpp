@@ -20,7 +20,11 @@ int main(){
     Parser parser;
     std::ifstream archivo("codigo");
 	if (archivo) {
-    parser.genVector(archivo);
+    std::vector<Token> tokens = parser.genVector(archivo);
+    for (const Token& t: tokens){
+        std::cout << t.toString() << "\n";
+    }
+    
 	} else {
 		std::cout << "Error: "
 		          << "no se encontro el archivo\n";
